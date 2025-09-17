@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, LinearProgress, Typography } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion"; // Import AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
 
 const phrases = [
   "Scanning ocean surface temperature...",
@@ -17,15 +17,14 @@ const LoadingOverlay = ({ duration = 15000, onComplete }) => {
 
   useEffect(() => {
     const interval = 100; // progress update every 100ms
-    const increment = (100 / (duration / interval));
+    const increment = 100 / (duration / interval);
 
-    // progress timer
     const progressTimer = setInterval(() => {
       setProgress((prev) => {
         const next = prev + increment;
         if (next >= 100) {
           clearInterval(progressTimer);
-          clearInterval(phraseTimer); // Clear phrase timer as well
+          clearInterval(phraseTimer);
           if (onComplete) onComplete();
           return 100;
         }
@@ -33,7 +32,6 @@ const LoadingOverlay = ({ duration = 15000, onComplete }) => {
       });
     }, interval);
 
-    // phrase timer: change phrase every 2.5s
     const phraseTimer = setInterval(() => {
       setPhraseIndex((prev) => (prev + 1) % phrases.length);
     }, 2500);
@@ -44,7 +42,6 @@ const LoadingOverlay = ({ duration = 15000, onComplete }) => {
     };
   }, [duration, onComplete]);
 
-  // Variant for the phrase animation
   const phraseVariants = {
     initial: { opacity: 0, y: -10 },
     animate: { opacity: 1, y: 0 },
@@ -56,7 +53,7 @@ const LoadingOverlay = ({ duration = 15000, onComplete }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }} // Increased duration for a smoother overall fade
+      transition={{ duration: 0.5 }}
     >
       <Box
         sx={{
@@ -74,16 +71,19 @@ const LoadingOverlay = ({ duration = 15000, onComplete }) => {
           px: 4,
         }}
       >
-        <AnimatePresence mode="wait"> {/* Use AnimatePresence to animate phrases in/out */}
+        <AnimatePresence mode="wait">
           <motion.div
-            key={phraseIndex} // Key changes to trigger exit/enter animation
+            key={phraseIndex}
             variants={phraseVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={{ duration: 0.4 }} // Animation duration for phrase change
+            transition={{ duration: 0.4 }}
           >
-            <Typography variant="h6" sx={{ color: "#fff", mb: 2, textAlign: "center" }}>
+            <Typography
+              variant="h6"
+              sx={{ color: "#fff", mb: 2, textAlign: "center" }}
+            >
               {phrases[phraseIndex]}
             </Typography>
           </motion.div>

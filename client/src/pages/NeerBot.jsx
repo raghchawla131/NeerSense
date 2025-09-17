@@ -12,29 +12,19 @@ import SendIcon from "@mui/icons-material/Send";
 import { motion } from "framer-motion";
 import WaveText from "../components/WaveText";
 import LoadingOverlay from "../components/LoadingOverlay";
+import { useNavigate } from "react-router-dom";
 
 const NeerBot = () => {
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (input.trim() === "") return;
 
-    // Add user message
-    const userMessage = { text: input, sender: "user" };
-    setMessages((prev) => [...prev, userMessage]);
-
     // Show loading overlay
     setLoading(true);
-
-    // Hardcoded 15s fake processing
-    setTimeout(() => {
-      setLoading(false);
-      const botMessage = { text: `You said: "${input}"`, sender: "bot" };
-      setMessages((prev) => [...prev, botMessage]);
-    }, 15000);
 
     setInput("");
   };
@@ -51,7 +41,15 @@ const NeerBot = () => {
       }}
     >
       {/* Show loading overlay when processing */}
-      {loading && <LoadingOverlay />}
+      {loading && (
+        <LoadingOverlay
+          duration={1500} // 15 seconds change later
+          onComplete={() => {
+            setLoading(false);
+            navigate("/argodetails"); // navigate after loading
+          }}
+        />
+      )}
 
       {/* App Title */}
       <motion.div

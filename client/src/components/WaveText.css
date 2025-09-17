@@ -22,7 +22,7 @@
 
 .wave-content h2:nth-child(1) {
   color: transparent;
-  -webkit-text-stroke: 1px #1e90ff; /* ocean blue outline */
+  -webkit-text-stroke: 1px #7d7d7d; /* ocean blue outline */
 }
 
 .wave-content h2:nth-child(2) {
