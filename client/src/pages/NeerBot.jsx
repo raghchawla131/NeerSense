@@ -56,11 +56,7 @@ const NeerBot = () => {
     console.error("Error sending query to backend:", error);
     setGeminiResponse({ error: error.message });
   } finally {
-    // Hide loading overlay after duration and navigate
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/argodetails");
-    }, 1500); // adjust to match overlay duration
+    // Do nothing here; LoadingOverlay.onComplete controls timing/navigation
   }
 };
 

@@ -39,6 +39,14 @@ const Home = () => {
           >
             Get Started
           </Button>
+          <Button
+            color="inherit"
+            sx={{ fontWeight: "bold", ml: 2 }}
+            component={RouterLink}
+            to="/oceanmap"
+          >
+            Map
+          </Button>
         </Toolbar>
       </AppBar>
 
@@ -106,6 +114,23 @@ const Home = () => {
             to="/neerbot"
           >
             Start Chatting
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{
+              color: "#fff",
+              borderColor: "#fff",
+              fontWeight: "bold",
+              px: 4,
+              py: 1.5,
+              borderRadius: "50px",
+              ml: 2,
+              "&:hover": { borderColor: "#bdbdbd", color: "#bdbdbd" },
+            }}
+            component={RouterLink}
+            to="/oceanmap"
+          >
+            View Map
           </Button>
         </motion.div>
       </Container>
