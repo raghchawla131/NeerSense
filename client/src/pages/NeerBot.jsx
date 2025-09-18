@@ -13,12 +13,14 @@ import { motion } from "framer-motion";
 import WaveText from "../components/WaveText";
 import LoadingOverlay from "../components/LoadingOverlay";
 import { useNavigate } from "react-router-dom";
+import { useSearch } from "../context/SearchContext.jsx";
 
 const NeerBot = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [geminiResponse, setGeminiResponse] = useState(null);
   const navigate = useNavigate();
+  const { setLastQuery, setNeerBotResult, setGeminiData } = useSearch();
 
   // const handleSendMessage = (e) => {
   //   e.preventDefault();
@@ -51,10 +53,16 @@ const NeerBot = () => {
 
     console.log("Gemini response:", data);   // <-- Shows in Inspect → Console
     setGeminiResponse(data);                 // store it in state
+    // Update shared context for dashboard
+    setLastQuery(userQuery);
+    setNeerBotResult({ source: "neerbot", text: data?.text || "", json: data?.json || null });
+    setGeminiData(data);
 
   } catch (error) {
     console.error("Error sending query to backend:", error);
     setGeminiResponse({ error: error.message });
+    setLastQuery(userQuery);
+    setNeerBotResult({ source: "neerbot", error: error.message });
   } finally {
     // Do nothing here; LoadingOverlay.onComplete controls timing/navigation
   }

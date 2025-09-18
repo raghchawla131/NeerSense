@@ -2,13 +2,16 @@ import React, { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import Papa from "papaparse";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useSearch } from "../context/SearchContext.jsx";
 
 const OceanMap = () => {
   // Approximate center of India
   const indiaCenter = [22.3511148, 78.6677428];
 
   const [points, setPoints] = useState([]);
+  const navigate = useNavigate();
+  const { setLastQuery, setNeerBotResult, setGeminiData } = useSearch();
 
   const formatDateTime = (value) => {
     if (value === undefined || value === null || value === "") return undefined;
@@ -79,6 +82,26 @@ const OceanMap = () => {
 
   const memoizedPoints = useMemo(() => points, [points]);
 
+  const handleMoreInfo = async (p) => {
+    const query = `Details for location lat:${p.lat}, lon:${p.lon}, float_id:${p.id ?? "unknown"}`;
+    setLastQuery(query);
+    setNeerBotResult({ source: "map", point: p });
+    try {
+      const res = await fetch("http://localhost:5000/api/gemini/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `Summarize ARGO-related context for this point and nearby profiles. Prioritize TEMP, PSAL, PRES and typical depth structure.`,
+          coords: { lat: p.lat, lon: p.lon },
+          floatId: p.id ?? null,
+        }),
+      });
+      const data = await res.json();
+      setGeminiData(data);
+    } catch (_) {}
+    navigate(`/argodetails?float_id=${encodeURIComponent(p.id ?? "")}&lat=${encodeURIComponent(p.lat)}&lon=${encodeURIComponent(p.lon)}`);
+  };
+
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <MapContainer
@@ -124,18 +147,21 @@ const OceanMap = () => {
                     Observed: {formatDateTime(p.juld)}
                   </div>
                 )}
-                <RouterLink
-                  to={`/argodetails?float_id=${encodeURIComponent(p.id ?? "")}`}
+                <button
+                  onClick={() => handleMoreInfo(p)}
                   style={{
-                    display: "inline-block",
                     marginTop: 8,
-                    textDecoration: "none",
+                    padding: "6px 10px",
+                    borderRadius: 8,
+                    border: "1px solid #1976d2",
+                    background: "#0f1115",
                     color: "#1976d2",
                     fontWeight: 600,
+                    cursor: "pointer",
                   }}
                 >
                   Get more details →
-                </RouterLink>
+                </button>
               </div>
             </Popup>
           </CircleMarker>
