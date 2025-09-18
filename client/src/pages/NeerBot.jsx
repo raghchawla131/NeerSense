@@ -17,17 +17,52 @@ import { useNavigate } from "react-router-dom";
 const NeerBot = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [geminiResponse, setGeminiResponse] = useState(null);
   const navigate = useNavigate();
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (input.trim() === "") return;
+  // const handleSendMessage = (e) => {
+  //   e.preventDefault();
+  //   if (input.trim() === "") return;
 
-    // Show loading overlay
-    setLoading(true);
+  //   // Show loading overlay
+  //   setLoading(true);
 
-    setInput("");
-  };
+  //   setInput("");
+  // };
+
+  const handleSendMessage = async (e) => {
+  e.preventDefault();
+  if (input.trim() === "") return;
+
+  setLoading(true);       // Show loading overlay
+  const userQuery = input;
+  setInput("");           // Clear input
+
+  try {
+    const response = await fetch("http://localhost:5000/api/gemini/ask", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: userQuery }),
+    });
+
+    const data = await response.json();
+
+    console.log("Gemini response:", data);   // <-- Shows in Inspect → Console
+    setGeminiResponse(data);                 // store it in state
+
+  } catch (error) {
+    console.error("Error sending query to backend:", error);
+    setGeminiResponse({ error: error.message });
+  } finally {
+    // Hide loading overlay after duration and navigate
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/argodetails");
+    }, 1500); // adjust to match overlay duration
+  }
+};
 
   return (
     <Box
@@ -43,7 +78,7 @@ const NeerBot = () => {
       {/* Show loading overlay when processing */}
       {loading && (
         <LoadingOverlay
-          duration={1500} // 15 seconds change later
+          duration={15000} // 15 seconds change later
           onComplete={() => {
             setLoading(false);
             navigate("/argodetails"); // navigate after loading

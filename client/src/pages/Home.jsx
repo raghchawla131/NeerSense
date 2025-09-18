@@ -81,6 +81,8 @@ const Home = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           <Typography variant="body1" sx={{ maxWidth: "600px", mb: 4 }}>
             Our AI-powered conversational system for ARGO floats allows you to
@@ -90,9 +92,6 @@ const Home = () => {
           </Typography>
 
           <Button
-            component={motion.button}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             variant="contained"
             sx={{
               bgcolor: "#007bff",
